@@ -10,13 +10,38 @@ function renderTasks() {
 
   tasks.forEach((task) => {
     const li = document.createElement("li");
-    li.textContent = task.text;
+    if (task.done) li.classList.add("done");
+
+    const label = document.createElement("label");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.done;
+    checkbox.addEventListener("change", () => {
+      task.done = checkbox.checked;
+      renderTasks();
+    });
+
+    const span = document.createElement("span");
+    span.textContent = task.text;
+
+    label.append(checkbox, span);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "✕";
+    deleteBtn.classList.add("delete-btn");
+    deleteBtn.addEventListener("click", () => {
+      tasks = tasks.filter((t) => t.id !== task.id);
+      renderTasks();
+    });
+
+    li.append(label, deleteBtn);
     list.append(li);
   });
 
-  count.textContent = `${tasks.length} task(s)`;
+  const remaining = tasks.filter((t) => !t.done).length;
+  count.textContent = `${remaining} ${remaining === 1 ? "task" : "tasks"} left`;
 }
-
 form.addEventListener("submit", (event) => {
     event.preventDefault();
 
